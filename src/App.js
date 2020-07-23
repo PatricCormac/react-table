@@ -2,20 +2,20 @@ import React, { Component } from "react";
 import Loader from "./Loader/Loader";
 import Table from "./Table/Table";
 import DeteilRowView from "./DeteilRowView/DeteilRowView";
+import ModeSelector from "./ModeSelector/ModeSelector";
 import _ from "lodash";
 
 class App extends Component {
   state = {
-    isLoading: true,
+    isLoading: false,
     data: [],
     sort: "asc",
     sortField: "id",
     row: null,
+    isModeSelected: false,
   };
-  async componentDidMount() {
-    const response = await fetch(
-      "http://www.filltext.com/?rows=32&id={number|1000}&firstName={firstName}&lastName={lastName}&email={email}&phone={phone|(xxx)xxx-xx-xx}&address={addressObject}&description={lorem|32}"
-    );
+  async fetchData(url) {
+    const response = await fetch(url);
     const data = await response.json();
     this.setState({
       isLoading: false,
@@ -36,8 +36,22 @@ class App extends Component {
   onRowSelect = (row) => {
     this.setState({ row });
   };
+  modeSElectHandler = (url) => {
+    this.setState({
+      isModeSelected: true,
+      isLoading: true,
+    });
+    this.fetchData(url);
+  };
 
   render() {
+    if (!this.state.isModeSelected) {
+      return (
+        <div className="container">
+          <ModeSelector onSelect={this.modeSElectHandler} />
+        </div>
+      );
+    }
     return (
       <div className="container">
         {this.state.isLoading ? (
