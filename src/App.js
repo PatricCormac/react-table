@@ -14,6 +14,7 @@ class App extends Component {
     sortField: "id",
     row: null,
     isModeSelected: false,
+    currentPage: 0,
   };
   async fetchData(url) {
     const response = await fetch(url);
@@ -40,12 +41,14 @@ class App extends Component {
     });
     this.fetchData(url);
   };
-  pageChangeHandler = (page) => {
-    console.log(page);
-  };
+  pageChangeHandler = ({ selected }) =>
+    this.setState({ currentPage: selected });
 
   render() {
     const pageSize = 50;
+    const displayData = _.chunk(this.state.data, pageSize)[
+      this.state.currentPage
+    ];
     if (!this.state.isModeSelected) {
       return (
         <div className="container">
@@ -59,7 +62,7 @@ class App extends Component {
           <Loader />
         ) : (
           <Table
-            data={this.state.data}
+            data={displayData}
             onSort={this.onSort}
             sort={this.state.sort}
             sortField={this.state.sortField}
