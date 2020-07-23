@@ -3,6 +3,7 @@ import Loader from "./Loader/Loader";
 import Table from "./Table/Table";
 import DeteilRowView from "./DeteilRowView/DeteilRowView";
 import ModeSelector from "./ModeSelector/ModeSelector";
+import TableSearch from "./TableSearch/TableSearch";
 import _ from "lodash";
 import ReactPaginate from "react-paginate";
 
@@ -11,6 +12,7 @@ class App extends Component {
     isLoading: false,
     data: [],
     sort: "asc",
+    search: "",
     sortField: "id",
     row: null,
     isModeSelected: false,
@@ -31,9 +33,6 @@ class App extends Component {
 
     this.setState({ data, sort, sortField });
   };
-  onRowSelect = (row) => {
-    this.setState({ row });
-  };
   modeSElectHandler = (url) => {
     this.setState({
       isModeSelected: true,
@@ -41,14 +40,38 @@ class App extends Component {
     });
     this.fetchData(url);
   };
+  onRowSelect = (row) => {
+    this.setState({ row });
+  };
   pageChangeHandler = ({ selected }) =>
     this.setState({ currentPage: selected });
 
+  searchHandler = (search) => {
+    this.setState({ search, currentPage: 0 });
+  };
+
+  getFilteredData() {
+    const { data, search } = this.state;
+
+    if (!search) {
+      return data;
+    }
+
+    let result = data.filter((item) => {
+      return (
+        item["firstName"].toLowerCase().includes(search.toLowerCase()) ||
+        item["lastName"].toLowerCase().includes(search.toLowerCase()) ||
+        item["email"].toLowerCase().includes(search.toLowerCase())
+      );
+    });
+    if (!result.length) {
+      result = this.state.data;
+    }
+    return result;
+  }
+
   render() {
     const pageSize = 50;
-    const displayData = _.chunk(this.state.data, pageSize)[
-      this.state.currentPage
-    ];
     if (!this.state.isModeSelected) {
       return (
         <div className="container">
@@ -56,18 +79,26 @@ class App extends Component {
         </div>
       );
     }
+
+    const filteredData = this.getFilteredData();
+    const pageCount = Math.ceil(filteredData.length / pageSize);
+    const displayData = _.chunk(filteredData, pageSize)[this.state.currentPage];
+
     return (
       <div className="container">
         {this.state.isLoading ? (
           <Loader />
         ) : (
-          <Table
-            data={displayData}
-            onSort={this.onSort}
-            sort={this.state.sort}
-            sortField={this.state.sortField}
-            onRowSelect={this.onRowSelect}
-          />
+          <React.Fragment>
+            <TableSearch onSearch={this.searchHandler} />
+            <Table
+              data={displayData}
+              onSort={this.onSort}
+              sort={this.state.sort}
+              sortField={this.state.sortField}
+              onRowSelect={this.onRowSelect}
+            />
+          </React.Fragment>
         )}
         {this.state.row ? <DeteilRowView person={this.state.row} /> : null}
         {this.state.data.length > pageSize ? (
@@ -76,7 +107,7 @@ class App extends Component {
             nextLabel={">"}
             breakLabel={"..."}
             breakClassName={"break-me"}
-            pageCount={20}
+            pageCount={pageCount}
             marginPagesDisplayed={2}
             pageRangeDisplayed={5}
             onPageChange={this.pageChangeHandler}
@@ -88,6 +119,7 @@ class App extends Component {
             nextClassName="page-item"
             previousLinkClassName="page-link"
             nextLinkClassName="page-link"
+            forcePage={this.state.currentPage}
           />
         ) : null}
       </div>
