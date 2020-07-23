@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import Loader from "./Loader/Loader";
 import Table from "./Table/Table";
+import DeteilRowView from "./DeteilRowView/DeteilRowView";
 import _ from "lodash";
 
 class App extends Component {
@@ -9,6 +10,7 @@ class App extends Component {
     data: [],
     sort: "asc",
     sortField: "id",
+    row: null,
   };
   async componentDidMount() {
     const response = await fetch(
@@ -31,6 +33,9 @@ class App extends Component {
       sortField,
     });
   };
+  onRowSelect = (row) => {
+    this.setState({ row });
+  };
 
   render() {
     return (
@@ -43,8 +48,10 @@ class App extends Component {
             onSort={this.onSort}
             sort={this.state.sort}
             sortField={this.state.sortField}
+            onRowSelect={this.onRowSelect}
           />
         )}
+        {this.state.row ? <DeteilRowView person={this.state.row} /> : null}
       </div>
     );
   }
