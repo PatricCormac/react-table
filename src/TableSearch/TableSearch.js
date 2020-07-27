@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 
-export default (props) => {
+export default props => {
   const [value, setValue] = useState("");
-  const valueChangeHandler = (event) => {
+  const valueChangeHandler = event => {
     setValue(event.target.value);
   };
 
