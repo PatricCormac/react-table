@@ -10,7 +10,8 @@ export default props => {
             <br />
             <input
               onChange={props.handleInputChange}
-              type="text"
+              type="number"
+              required
               name="id"
               value={props.newId}
             />
@@ -21,6 +22,7 @@ export default props => {
             <input
               onChange={props.handleInputChange}
               type="text"
+              required
               name="firstName"
               value={props.newFirstName}
             />
@@ -31,6 +33,7 @@ export default props => {
             <input
               onChange={props.handleInputChange}
               type="text"
+              required
               name="lastName"
               value={props.newLastName}
             />
@@ -41,6 +44,7 @@ export default props => {
             <input
               onChange={props.handleInputChange}
               type="text"
+              required
               name="email"
               value={props.newEmail}
             />
@@ -51,6 +55,7 @@ export default props => {
             <input
               onChange={props.handleInputChange}
               type="tel"
+              required
               name="phone"
               value={props.newPhone}
             />
